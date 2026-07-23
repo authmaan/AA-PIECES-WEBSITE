@@ -1,0 +1,191 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   AA PIECES — Design Token System
+   Cream dominant, brown primary, gold accent (used sparingly), black for
+   dramatic editorial moments only. See architecture doc Section 5.
+   ========================================================================== */
+
+@theme inline {
+  /* ---- Brand color primitives ---- */
+  --color-cream: #fffbec;
+  --color-cream-dim: #f7f2df;
+  --color-brown: #826929;
+  --color-brown-dark: #5e4c1d;
+  --color-brown-light: #a08a42;
+  --color-gold: #d0ac3d;
+  --color-gold-soft: #e2c876;
+  --color-black: #000000;
+  --color-white: #ffffff;
+
+  /* ---- Semantic tokens ---- */
+  --color-background: var(--color-cream);
+  --color-foreground: var(--color-brown-dark);
+  --color-accent: var(--color-gold);
+  --color-primary: var(--color-brown);
+  --color-border-subtle: color-mix(in srgb, var(--color-brown) 18%, transparent);
+
+  /* ---- Typography ---- */
+  --font-display: "Playfair Display", serif;
+  --font-editorial: "Cormorant Garamond", serif;
+  --font-body: "Inter", sans-serif;
+  --font-label: "Manrope", sans-serif;
+
+  /* ---- Motion ---- */
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ---- Layout ---- */
+  --container-max: 1440px;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+* {
+  border-color: var(--color-border-subtle);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   Typography utility classes — the eyebrow / title / subtitle pattern used
+   across every section (see SectionHeading component)
+   ========================================================================== */
+
+.eyebrow {
+  font-family: var(--font-label);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+}
+
+.display-hero {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 0.98;
+}
+
+.display-title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.08;
+}
+
+.editorial-quote {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.editorial-body {
+  font-family: var(--font-editorial);
+  font-weight: 400;
+  line-height: 1.65;
+}
+
+.label-nav {
+  font-family: var(--font-label);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Focus states — visible, on brand, never removed
+   ========================================================================== */
+
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+   Skip link
+   ========================================================================== */
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--color-brown-dark);
+  color: var(--color-cream);
+  padding: 1rem 1.5rem;
+  font-family: var(--font-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.8125rem;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+/* ==========================================================================
+   Thin gold divider — used between major sections instead of hard borders
+   ========================================================================== */
+
+.divider-gold {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-gold) 50%,
+    transparent
+  );
+}
+
+/* ==========================================================================
+   Container
+   ========================================================================== */
+
+.container-boutique {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .container-boutique {
+    padding-inline: 3rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container-boutique {
+    padding-inline: 5rem;
+  }
+}
