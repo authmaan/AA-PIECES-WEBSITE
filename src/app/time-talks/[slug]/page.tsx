@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { RevealOnScroll } from "@/components/common/RevealOnScroll";
 import { ARTICLES } from "@/lib/data/content";
+import { isSvgSrc } from "@/lib/utils";
 
 export async function generateStaticParams() {
   return ARTICLES.filter((a) => a.type === "time-talks").map((a) => ({ slug: a.slug }));
@@ -52,7 +53,7 @@ export default async function TimeTalksArticlePage({
 
         <RevealOnScroll variant="fade" delay={0.1}>
           <div className="relative aspect-[16/9] mb-10 bg-[var(--color-cream-dim)]">
-            <Image src={article.coverImage.url} alt={article.coverImage.alt} fill className="object-cover" />
+            <Image src={article.coverImage.url} alt={article.coverImage.alt} fill unoptimized={isSvgSrc(article.coverImage.url)} className="object-cover" />
           </div>
         </RevealOnScroll>
 

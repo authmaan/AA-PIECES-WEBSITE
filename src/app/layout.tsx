@@ -32,7 +32,14 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>
+      {/*
+        suppressHydrationWarning on <body> only (never <html>, which would
+        mask real issues) — this is React's documented fix for the most
+        common false-positive hydration warning: browser extensions like
+        Grammarly or DarkReader inject attributes into <body> before React
+        hydrates, tripping a warning for a mismatch that isn't an app bug.
+      */}
+      <body suppressHydrationWarning>
         <a href="#main-content" className="skip-link">
           Skip to content
         </a>

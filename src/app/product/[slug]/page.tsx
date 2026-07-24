@@ -8,7 +8,7 @@ import { RevealOnScroll } from "@/components/common/RevealOnScroll";
 import { Divider } from "@/components/common/Divider";
 import { CollectionCard } from "@/components/sections/collection/CollectionCard";
 import { getAllProducts, getProductBySlug, getRelatedProducts } from "@/lib/data/fetchers";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, isSvgSrc } from "@/lib/utils";
 
 export async function generateStaticParams() {
   const products = await getAllProducts();
@@ -62,12 +62,13 @@ export default async function ProductDetailPage({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20">
           {/* Gallery */}
           <RevealOnScroll variant="fade">
-            <div className="aspect-square bg-[var(--color-cream-dim)] relative overflow-hidden sticky top-28">
+            <div className="aspect-square bg-[var(--color-cream-dim)] relative overflow-hidden lg:sticky lg:top-28">
               <Image
                 src={product.images[0].url}
                 alt={product.images[0].alt}
                 fill
                 priority
+                unoptimized={isSvgSrc(product.images[0].url)}
                 sizes="(min-width: 1024px) 50vw, 100vw"
                 className="object-cover"
               />

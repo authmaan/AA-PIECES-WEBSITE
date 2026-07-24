@@ -3,7 +3,7 @@ import Image from "next/image";
 import { RevealOnScroll } from "@/components/common/RevealOnScroll";
 import { WhatsAppOrderButton } from "@/components/common/WhatsAppOrderButton";
 import { getFeaturedProducts } from "@/lib/data/fetchers";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, isSvgSrc } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Spotlight",
@@ -45,6 +45,7 @@ export default async function SpotlightPage() {
                 alt={spotlight.images[0].alt}
                 fill
                 priority
+                unoptimized={isSvgSrc(spotlight.images[0].url)}
                 className="object-cover"
               />
             </div>
