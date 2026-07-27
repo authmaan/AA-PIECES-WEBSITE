@@ -1,15 +1,32 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Gem, Truck, ShieldCheck } from "lucide-react";
 import { WhatsAppOrderButton } from "@/components/common/WhatsAppOrderButton";
 import { RevealOnScroll } from "@/components/common/RevealOnScroll";
 import { Divider } from "@/components/common/Divider";
+import { ColorSelector } from "@/components/common/ColorSelector";
 import { ProductGallery } from "@/components/sections/product-gallery/ProductGallery";
 import { CollectionCard } from "@/components/sections/collection/CollectionCard";
 import { getAllProducts, getProductBySlug, getRelatedProducts } from "@/lib/data/fetchers";
 import { formatPrice } from "@/lib/utils";
 import { ProductMedia } from "@/types/product";
+
+// Placeholder colour options — the Product model has no colour/variant
+// field yet (that arrives with the external product library integration).
+// UI only, per this step's scope: selecting one is purely visual and does
+// not affect the gallery, price, or any other product data.
+const PLACEHOLDER_COLORS = [
+  { name: "Gold", swatch: "#D0AC3D" },
+  { name: "Black", swatch: "#000000" },
+  { name: "Silver", swatch: "#C7C7C7" },
+];
+
+const TRUST_BADGES = [
+  { label: "Carefully Selected", icon: Gem },
+  { label: "Nationwide Delivery", icon: Truck },
+  { label: "Secure Payments", icon: ShieldCheck },
+];
 
 export async function generateStaticParams() {
   const products = await getAllProducts();
@@ -30,12 +47,6 @@ export async function generateMetadata({
     openGraph: { images: [product.images[0].url] },
   };
 }
-
-const AVAILABILITY_LABEL: Record<string, string> = {
-  "in-stock": "In Stock",
-  "made-to-order": "Made to Order",
-  "sold-out": "Currently Sold Out",
-};
 
 export default async function ProductDetailPage({
   params,
@@ -89,24 +100,48 @@ export default async function ProductDetailPage({
           {/* Details */}
           <div>
             <RevealOnScroll variant="fade-up">
-              <p className="label-nav text-[var(--color-gold)] text-xs mb-3">
-                {product.reference} · {AVAILABILITY_LABEL[product.availability]}
-              </p>
+              {/* 1. Product Name */}
               <h1 className="display-hero text-[var(--color-brown-dark)] text-4xl md:text-5xl leading-tight mb-4">
                 {product.name}
               </h1>
-              <p className="editorial-quote text-xl text-[var(--color-brown)] mb-6">
-                {product.tagline}
-              </p>
-              <p className="label-nav text-2xl text-[var(--color-brown-dark)] mb-8">
+
+              {/* 2. Selling Price — bumped text-2xl -> text-3xl for prominence, still within the existing type scale */}
+              <p className="label-nav text-3xl text-[var(--color-brown-dark)] mb-4">
                 {formatPrice(product.price, product.currency)}
               </p>
 
+              {/* 3. One-line Statement */}
+              <p className="editorial-quote text-xl text-[var(--color-brown)] mb-8">
+                {product.tagline}
+              </p>
+
+              {/* 4. Colour Selector — UI only, see ColorSelector component */}
+              <div className="mb-8">
+                <ColorSelector colors={PLACEHOLDER_COLORS} />
+              </div>
+
+              {/* 5. Primary CTA */}
               <WhatsAppOrderButton product={product} fullWidth className="mb-2" />
               <p className="editorial-body text-sm text-[var(--color-brown)]/70 text-center mt-3">
                 Ordering here starts a WhatsApp conversation with our team —
                 no cart, no checkout, just a direct line to us.
               </p>
+
+              {/* 6. Trust Badges — reuses the existing Divider rather than a
+                  one-off border; gap tightens below `sm` so labels like
+                  "Nationwide Delivery" have room to wrap cleanly at
+                  320–375px instead of crowding a wide gap-4 */}
+              <Divider className="mt-10 mb-8" />
+              <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                {TRUST_BADGES.map((badge) => (
+                  <div key={badge.label} className="flex flex-col items-center text-center gap-2">
+                    <badge.icon className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--color-gold)]" strokeWidth={1.5} />
+                    <p className="label-nav text-xs text-[var(--color-brown-dark)] leading-tight">
+                      {badge.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </RevealOnScroll>
 
             <Divider className="my-10" />
