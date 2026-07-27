@@ -7,6 +7,28 @@ export interface ProductImage {
   alt: string;
 }
 
+/**
+ * PDP Gallery media model (PDP Spec v1.0, "Media Architecture").
+ * A discriminated union rather than separate images[]/videos[] arrays, so
+ * ProductGallery can preserve display order and switch on one `.type`
+ * check per item.
+ */
+export interface ProductMediaImage {
+  type: "image";
+  url: string;
+  alt: string;
+}
+
+export interface ProductMediaVideo {
+  type: "video";
+  url: string;
+  /** Used as the <video> poster attribute and as the thumbnail before playback */
+  poster: string;
+  alt: string;
+}
+
+export type ProductMedia = ProductMediaImage | ProductMediaVideo;
+
 export interface ProductSpec {
   label: string;
   value: string;
@@ -36,6 +58,12 @@ export interface Product {
   waterResistance: string;
   specs: ProductSpec[];
   images: ProductImage[];
+  /**
+   * PDP gallery media (images + videos, in order). Optional — unused
+   * until real per-product data exists; every existing field above is
+   * untouched.
+   */
+  gallery?: ProductMedia[];
   isFeatured: boolean;
   isNewArrival: boolean;
 }

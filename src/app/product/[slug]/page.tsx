@@ -1,14 +1,15 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { WhatsAppOrderButton } from "@/components/common/WhatsAppOrderButton";
 import { RevealOnScroll } from "@/components/common/RevealOnScroll";
 import { Divider } from "@/components/common/Divider";
+import { ProductGallery } from "@/components/sections/product-gallery/ProductGallery";
 import { CollectionCard } from "@/components/sections/collection/CollectionCard";
 import { getAllProducts, getProductBySlug, getRelatedProducts } from "@/lib/data/fetchers";
-import { formatPrice, isSvgSrc } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
+import { ProductMedia } from "@/types/product";
 
 export async function generateStaticParams() {
   const products = await getAllProducts();
@@ -47,6 +48,20 @@ export default async function ProductDetailPage({
 
   const related = await getRelatedProducts(product);
 
+  // Existing sample data only has `images`, not the newer `gallery` field
+  // yet (that's real per-product content, out of scope for this step) —
+  // map it into the gallery's media shape so ProductGallery has something
+  // real to render. Products with one image simply get a one-item
+  // gallery with no thumbnail strip, which ProductGallery already
+  // handles on its own.
+  const media: ProductMedia[] =
+    product.gallery ??
+    product.images.map((img) => ({
+      type: "image" as const,
+      url: img.url,
+      alt: img.alt,
+    }));
+
   return (
     <div className="pt-32 pb-24 md:pt-36 md:pb-32">
       <div className="container-boutique">
@@ -62,15 +77,11 @@ export default async function ProductDetailPage({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20">
           {/* Gallery */}
           <RevealOnScroll variant="fade">
-            <div className="aspect-square bg-[var(--color-cream-dim)] relative overflow-hidden lg:sticky lg:top-28">
-              <Image
-                src={product.images[0].url}
-                alt={product.images[0].alt}
-                fill
+            <div className="lg:sticky lg:top-28">
+              <ProductGallery
+                media={media}
+                ariaLabel={`${product.name} media`}
                 priority
-                unoptimized={isSvgSrc(product.images[0].url)}
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                className="object-cover"
               />
             </div>
           </RevealOnScroll>
