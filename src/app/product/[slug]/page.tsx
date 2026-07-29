@@ -5,7 +5,7 @@ import { ChevronRight, Gem, Truck, ShieldCheck } from "lucide-react";
 import { WhatsAppOrderButton } from "@/components/common/WhatsAppOrderButton";
 import { RevealOnScroll } from "@/components/common/RevealOnScroll";
 import { Divider } from "@/components/common/Divider";
-import { ColorSelector } from "@/components/common/ColorSelector";
+import { ProductColorSelector } from "@/components/common/ProductColorSelector";
 import { ProductGallery } from "@/components/sections/product-gallery/ProductGallery";
 import { CollectionCard } from "@/components/sections/collection/CollectionCard";
 import { getAllProducts, getProductBySlug, getRelatedProducts } from "@/lib/data/fetchers";
@@ -117,7 +117,7 @@ export default async function ProductDetailPage({
 
               {/* 4. Colour Selector — UI only, see ColorSelector component */}
               <div className="mb-8">
-                <ColorSelector colors={PLACEHOLDER_COLORS} />
+                <ProductColorSelector colors={PLACEHOLDER_COLORS} />
               </div>
 
               {/* 5. Primary CTA */}
