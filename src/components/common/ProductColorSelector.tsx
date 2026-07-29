@@ -1,33 +1,38 @@
 "use client";
 
-import { useState } from "react";
 import { ColorSelector } from "./ColorSelector";
-
-interface ColorOption {
-  name: string;
-  swatch: string;
-}
+import { useProductVariant } from "./ProductVariantContext";
+import { ProductVariant } from "@/types/product";
 
 interface ProductColorSelectorProps {
-  colors: ColorOption[];
+  colors: ProductVariant[];
 }
 
 /**
- * Thin state-holding wrapper around the controlled ColorSelector. Exists
- * only because the Product Detail Page is an async Server Component and
- * can't hold `useState` itself — this is the minimal client boundary
- * needed to give ColorSelector a real `selected`/`onSelect` pair without
- * converting the whole page to a client component.
+ * Wires the presentation-only ColorSelector to the shared
+ * ProductVariantContext instead of holding its own local state — this is
+ * what "exposes the selected variant to the product page" actually means
+ * given page.tsx can't hold state itself. ColorSelector's own props
+ * (colors, selected, onSelect) and everything it renders are unchanged;
+ * only where `selected` physically lives changed, from a local useState
+ * to this shared context.
  *
- * Selection is still purely local/visual — nothing here wires into the
- * gallery or any other product data yet (that's a later step). Initial
- * selection defaults to the first colour, matching ColorSelector's prior
- * internal-state behavior exactly, so this introduces no visible change.
+ * `colors` is typed as ProductVariant[] now (previously a bare
+ * {name, swatch} shape) since selecting an option needs to resolve to a
+ * real variant object to push into context — but ProductVariant already
+ * structurally satisfies everything ColorSelector's own prop type
+ * expects, so ColorSelector itself required no changes at all.
  */
 export function ProductColorSelector({ colors }: ProductColorSelectorProps) {
-  const [selected, setSelected] = useState(colors[0]?.name ?? "");
+  const { selectedVariant, selectVariant } = useProductVariant();
+  const selected = selectedVariant?.name ?? colors[0]?.name ?? "";
+
+  function handleSelect(name: string) {
+    const variant = colors.find((c) => c.name === name);
+    if (variant) selectVariant(variant);
+  }
 
   return (
-    <ColorSelector colors={colors} selected={selected} onSelect={setSelected} />
+    <ColorSelector colors={colors} selected={selected} onSelect={handleSelect} />
   );
 }

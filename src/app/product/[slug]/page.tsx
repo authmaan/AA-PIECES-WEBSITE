@@ -6,21 +6,12 @@ import { WhatsAppOrderButton } from "@/components/common/WhatsAppOrderButton";
 import { RevealOnScroll } from "@/components/common/RevealOnScroll";
 import { Divider } from "@/components/common/Divider";
 import { ProductColorSelector } from "@/components/common/ProductColorSelector";
-import { ProductGallery } from "@/components/sections/product-gallery/ProductGallery";
+import { ProductVariantProvider } from "@/components/common/ProductVariantContext";
+import { ProductVariantGallery } from "@/components/sections/product-gallery/ProductVariantGallery";
 import { CollectionCard } from "@/components/sections/collection/CollectionCard";
 import { getAllProducts, getProductBySlug, getRelatedProducts } from "@/lib/data/fetchers";
 import { formatPrice } from "@/lib/utils";
 import { ProductMedia } from "@/types/product";
-
-// Placeholder colour options — the Product model has no colour/variant
-// field yet (that arrives with the external product library integration).
-// UI only, per this step's scope: selecting one is purely visual and does
-// not affect the gallery, price, or any other product data.
-const PLACEHOLDER_COLORS = [
-  { name: "Gold", swatch: "#D0AC3D" },
-  { name: "Black", swatch: "#000000" },
-  { name: "Silver", swatch: "#C7C7C7" },
-];
 
 const TRUST_BADGES = [
   { label: "Carefully Selected", icon: Gem },
@@ -85,17 +76,17 @@ export default async function ProductDetailPage({
           </ol>
         </nav>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20">
-          {/* Gallery */}
-          <RevealOnScroll variant="fade">
-            <div className="lg:sticky lg:top-28">
-              <ProductGallery
-                media={media}
-                ariaLabel={`${product.name} media`}
-                priority
-              />
-            </div>
-          </RevealOnScroll>
+        <ProductVariantProvider variants={product.variants} defaultMedia={media}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20">
+            {/* Gallery */}
+            <RevealOnScroll variant="fade">
+              <div className="lg:sticky lg:top-28">
+                <ProductVariantGallery
+                  ariaLabel={`${product.name} media`}
+                  priority
+                />
+              </div>
+            </RevealOnScroll>
 
           {/* Details */}
           <div>
@@ -115,10 +106,15 @@ export default async function ProductDetailPage({
                 {product.tagline}
               </p>
 
-              {/* 4. Colour Selector — UI only, see ColorSelector component */}
-              <div className="mb-8">
-                <ProductColorSelector colors={PLACEHOLDER_COLORS} />
-              </div>
+              {/* 4. Colour Selector — only rendered when the product actually
+                  has colour variants; UI-only placeholder colours with no
+                  real media behind them would be misleading now that
+                  selecting one actually does something */}
+              {product.variants && product.variants.length > 0 && (
+                <div className="mb-8">
+                  <ProductColorSelector colors={product.variants} />
+                </div>
+              )}
 
               {/* 5. Primary CTA */}
               <WhatsAppOrderButton product={product} fullWidth className="mb-2" />
@@ -172,6 +168,7 @@ export default async function ProductDetailPage({
             </RevealOnScroll>
           </div>
         </div>
+        </ProductVariantProvider>
 
         {/* Related products */}
         {related.length > 0 && (
