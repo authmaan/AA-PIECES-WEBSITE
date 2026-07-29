@@ -38,6 +38,36 @@ export const PRODUCTS: Product[] = [
       { label: "Warranty", value: "2-year AA PIECES guarantee" },
     ],
     images: [{ url: "/products/meridian-classic.svg", alt: "Meridian Classic watch with gold case and brown dial" }],
+    // Placeholder colour variants. "Black" reuses the Obsidian Pilot
+    // illustration as a stand-in — there's no separate black-case render
+    // of Meridian Classic itself yet. Real per-colour photography will
+    // replace both entries via the external product library integration;
+    // this exists to exercise the variants data shape, not to be final
+    // imagery.
+    variants: [
+      {
+        name: "Gold",
+        swatch: "#D0AC3D",
+        media: [
+          {
+            type: "image",
+            url: "/products/meridian-classic.svg",
+            alt: "Meridian Classic watch with gold case and brown dial",
+          },
+        ],
+      },
+      {
+        name: "Black",
+        swatch: "#000000",
+        media: [
+          {
+            type: "image",
+            url: "/products/obsidian-pilot.svg",
+            alt: "Meridian Classic watch, black case variant (placeholder image)",
+          },
+        ],
+      },
+    ],
     isFeatured: true,
     isNewArrival: false,
   },
@@ -96,6 +126,32 @@ export const PRODUCTS: Product[] = [
       { label: "Warranty", value: "2-year AA PIECES guarantee" },
     ],
     images: [{ url: "/products/regal-heritage-gmt.svg", alt: "Regal Heritage GMT watch with cream dial and brown case" }],
+    // Placeholder colour variants — see the note on Meridian Classic above.
+    // "Gold" reuses the Aurum Slim illustration as a stand-in.
+    variants: [
+      {
+        name: "Brown",
+        swatch: "#826929",
+        media: [
+          {
+            type: "image",
+            url: "/products/regal-heritage-gmt.svg",
+            alt: "Regal Heritage GMT watch with cream dial and brown case",
+          },
+        ],
+      },
+      {
+        name: "Gold",
+        swatch: "#D0AC3D",
+        media: [
+          {
+            type: "image",
+            url: "/products/aurum-slim.svg",
+            alt: "Regal Heritage GMT watch, gold case variant (placeholder image)",
+          },
+        ],
+      },
+    ],
     isFeatured: true,
     isNewArrival: false,
   },
