@@ -6,6 +6,8 @@ import { Maximize2 } from "lucide-react";
 import { AnimatedImage } from "@/components/common/AnimatedImage";
 import { GalleryThumbnail } from "./GalleryThumbnail";
 import { GalleryLightbox } from "./GalleryLightbox";
+import { useSwipeNavigation } from "./useSwipeNavigation";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { ProductMedia } from "@/types/product";
 import { EASE_PREMIUM } from "@/lib/animations/variants";
 
@@ -52,6 +54,13 @@ interface ProductGalleryProps {
  *   lightbox shares this component's activeIndex rather than tracking
  *   its own, so closing it leaves the inline gallery showing whatever was
  *   last viewed.
+ * - Phase 3B: on coarse-pointer (touch) devices, the hero also supports
+ *   swipe-to-navigate (shared threshold logic in useSwipeNavigation),
+ *   calling the same setActiveIndex path as clicks/keyboard — so swipe is
+ *   just a third input into the same state, not a parallel system.
+ *   Disabled on desktop entirely (avoids any conflict with mouse
+ *   interaction) and disabled when the active item is a video (avoids
+ *   competing with the video's own touch scrubbing controls).
  */
 export function ProductGallery({ media, ariaLabel, priority = false }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -59,6 +68,20 @@ export function ProductGallery({ media, ariaLabel, priority = false }: ProductGa
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const heroId = useId();
   const active = media[activeIndex];
+
+  // Swipe is touch-only (Phase 3B) — desktop mouse interaction (including
+  // the lightbox's click-to-zoom) is left completely alone.
+  const isTouchDevice = useMediaQuery("(pointer: coarse)");
+
+  function goToIndex(index: number) {
+    setActiveIndex((index + media.length) % media.length);
+  }
+
+  const swipeProps = useSwipeNavigation({
+    enabled: isTouchDevice && media.length > 1 && active?.type !== "video",
+    onPrevious: () => goToIndex(activeIndex - 1),
+    onNext: () => goToIndex(activeIndex + 1),
+  });
 
   function handleThumbnailKeyDown(
     event: React.KeyboardEvent<HTMLButtonElement>,
@@ -106,6 +129,7 @@ export function ProductGallery({ media, ariaLabel, priority = false }: ProductGa
             exit={{ opacity: 0 }}
             transition={{ duration: 0.28, ease: EASE_PREMIUM }}
             className="absolute inset-0"
+            {...swipeProps}
           >
             {active.type === "video" ? (
               <video

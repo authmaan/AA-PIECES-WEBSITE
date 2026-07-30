@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { AnimatedImage } from "@/components/common/AnimatedImage";
 import { GalleryThumbnail } from "./GalleryThumbnail";
+import { useSwipeNavigation } from "./useSwipeNavigation";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { ProductMedia } from "@/types/product";
 import { EASE_PREMIUM } from "@/lib/animations/variants";
 
@@ -58,6 +60,14 @@ interface GalleryLightboxProps {
  * Video gets custom play/pause + mute controls here instead of the
  * native browser chrome the inline gallery still uses — a deliberate,
  * scoped difference; the inline video is untouched.
+ *
+ * Phase 3B: swipe-to-navigate on coarse-pointer (touch) devices, sharing
+ * the same threshold logic (useSwipeNavigation) as the inline hero, and
+ * calling this component's existing `goTo` — so swipe, arrow buttons,
+ * and keyboard all drive the same navigation path. Disabled on desktop,
+ * disabled while zoomed (panning a zoomed image is a separate feature,
+ * intentionally out of scope), and disabled for video (avoids competing
+ * with the video's own touch scrubbing controls).
  */
 export function GalleryLightbox({
   media,
@@ -80,6 +90,18 @@ export function GalleryLightbox({
     setVideoPlaying(false);
     onNavigate((index + media.length) % media.length);
   }
+
+  // Swipe is touch-only (Phase 3B), and — same reasoning as the desktop
+  // gating — suppressed while zoomed (panning a zoomed image is a
+  // separate, out-of-scope feature; swipe-to-navigate would otherwise
+  // fight for the same gesture) and while the active item is a video
+  // (avoids competing with the video's own touch scrubbing controls).
+  const isTouchDevice = useMediaQuery("(pointer: coarse)");
+  const swipeProps = useSwipeNavigation({
+    enabled: isTouchDevice && media.length > 1 && !zoomed && active?.type !== "video",
+    onPrevious: () => goTo(activeIndex - 1),
+    onNext: () => goTo(activeIndex + 1),
+  });
 
   function handleKeyDown(event: React.KeyboardEvent) {
     if (event.key === "ArrowRight") {
@@ -182,6 +204,7 @@ export function GalleryLightbox({
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.28, ease: EASE_PREMIUM }}
                       className="relative w-full h-full max-w-5xl max-h-full flex items-center justify-center"
+                      {...swipeProps}
                     >
                       {active.type === "video" ? (
                         <div className="relative w-full max-h-full aspect-square max-w-[min(90vw,80vh)]">
