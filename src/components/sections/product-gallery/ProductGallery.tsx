@@ -2,8 +2,10 @@
 
 import { useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { Maximize2 } from "lucide-react";
 import { AnimatedImage } from "@/components/common/AnimatedImage";
 import { GalleryThumbnail } from "./GalleryThumbnail";
+import { GalleryLightbox } from "./GalleryLightbox";
 import { ProductMedia } from "@/types/product";
 import { EASE_PREMIUM } from "@/lib/animations/variants";
 
@@ -25,8 +27,8 @@ interface ProductGalleryProps {
 }
 
 /**
- * PDP Gallery (Spec v1.0) — built as the permanent, reusable gallery for
- * every future AA Pieces product, not just this one page.
+ * PDP Gallery (Spec v1.0 + Phase 3A) — built as the permanent, reusable
+ * gallery for every future AA Pieces product, not just this one page.
  *
  * - Hero media on top, thumbnail strip beneath — used for both desktop and
  *   mobile. The spec allows beneath or beside on desktop; beneath was
@@ -35,17 +37,25 @@ interface ProductGalleryProps {
  *   (~280ms, simultaneous crossfade, not sequential) — matches "smooth
  *   fade transitions... avoid excessive animation."
  * - Video items render natively (<video controls playsInline poster>) in
- *   the hero slot when selected — no lightbox, per spec.
- * - Keyboard: every thumbnail is independently Tab-reachable (native
- *   <button>), Enter/Space activates the focused one (also native),
- *   Left/Right/Home/End move focus between thumbnails without changing
- *   selection.
+ *   the inline hero slot when selected.
+ * - Keyboard (inline strip): every thumbnail is independently Tab-reachable
+ *   (native <button>), Enter/Space activates the focused one (also
+ *   native), Left/Right/Home/End move focus between thumbnails without
+ *   changing selection.
  * - A visually-hidden live region announces the current selection so
  *   screen reader users get feedback when it changes.
- * - Not wired into the live Product Detail Page yet — that's Step 2.
+ * - Phase 3A: clicking the hero opens a fullscreen lightbox (GalleryLightbox)
+ *   at the current image, with its own crossfade transitions, direct
+ *   Left/Right paging (a deliberately different — and standard for a
+ *   fullscreen viewer — keyboard convention than the inline strip's
+ *   focus-only arrows), click-to-zoom, and custom video controls. The
+ *   lightbox shares this component's activeIndex rather than tracking
+ *   its own, so closing it leaves the inline gallery showing whatever was
+ *   last viewed.
  */
 export function ProductGallery({ media, ariaLabel, priority = false }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const heroId = useId();
   const active = media[activeIndex];
@@ -116,6 +126,17 @@ export function ProductGallery({ media, ariaLabel, priority = false }: ProductGa
             )}
           </motion.div>
         </AnimatePresence>
+
+        {/* Phase 3A: expand to fullscreen. A visible small icon rather than
+            hover-only, since hover-only affordances don't work on touch */}
+        <button
+          type="button"
+          onClick={() => setLightboxOpen(true)}
+          aria-label="View fullscreen"
+          className="absolute bottom-3 right-3 flex items-center justify-center w-9 h-9 rounded-full bg-[var(--color-cream)]/90 hover:bg-[var(--color-cream)] text-[var(--color-brown-dark)] transition-colors"
+        >
+          <Maximize2 className="w-4 h-4" strokeWidth={1.75} />
+        </button>
       </div>
 
       {/* Visually-hidden announcement for screen reader users when selection changes */}
@@ -146,6 +167,15 @@ export function ProductGallery({ media, ariaLabel, priority = false }: ProductGa
           ))}
         </div>
       )}
+
+      <GalleryLightbox
+        media={media}
+        activeIndex={activeIndex}
+        open={lightboxOpen}
+        onOpenChange={setLightboxOpen}
+        onNavigate={setActiveIndex}
+        ariaLabel={ariaLabel}
+      />
     </div>
   );
 }
