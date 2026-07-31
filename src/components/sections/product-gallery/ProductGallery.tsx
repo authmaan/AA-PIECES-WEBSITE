@@ -7,6 +7,7 @@ import { AnimatedImage } from "@/components/common/AnimatedImage";
 import { GalleryThumbnail } from "./GalleryThumbnail";
 import { GalleryLightbox } from "./GalleryLightbox";
 import { useSwipeNavigation } from "./useSwipeNavigation";
+import { useAdjacentMediaPreload } from "./useAdjacentMediaPreload";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { ProductMedia } from "@/types/product";
 import { EASE_PREMIUM } from "@/lib/animations/variants";
@@ -61,6 +62,13 @@ interface ProductGalleryProps {
  *   Disabled on desktop entirely (avoids any conflict with mouse
  *   interaction) and disabled when the active item is a video (avoids
  *   competing with the video's own touch scrubbing controls).
+ * - Phase 3D: previous/next images are preloaded in the background
+ *   (useAdjacentMediaPreload) whenever activeIndex changes, and
+ *   AnimatedImage itself now handles loading state internally (a neutral
+ *   placeholder that fades out once each image is ready) — neither of
+ *   these needed any change to this component's own crossfade/transition
+ *   logic, which is exactly why the loading-state work lives inside
+ *   AnimatedImage rather than here.
  */
 export function ProductGallery({ media, ariaLabel, priority = false }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -68,6 +76,10 @@ export function ProductGallery({ media, ariaLabel, priority = false }: ProductGa
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const heroId = useId();
   const active = media[activeIndex];
+
+  // Phase 3D: warm the browser cache for the previous/next images so
+  // navigating to them feels instant. Images only, no video preloading.
+  useAdjacentMediaPreload(media, activeIndex);
 
   // Swipe is touch-only (Phase 3B) — desktop mouse interaction (including
   // the lightbox's click-to-zoom) is left completely alone.

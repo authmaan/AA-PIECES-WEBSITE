@@ -16,6 +16,7 @@ import {
 import { AnimatedImage } from "@/components/common/AnimatedImage";
 import { GalleryThumbnail } from "./GalleryThumbnail";
 import { useSwipeNavigation } from "./useSwipeNavigation";
+import { useAdjacentMediaPreload } from "./useAdjacentMediaPreload";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { ProductMedia } from "@/types/product";
 import { EASE_PREMIUM } from "@/lib/animations/variants";
@@ -68,6 +69,11 @@ interface GalleryLightboxProps {
  * disabled while zoomed (panning a zoomed image is a separate feature,
  * intentionally out of scope), and disabled for video (avoids competing
  * with the video's own touch scrubbing controls).
+ *
+ * Phase 3D: shares the same useAdjacentMediaPreload hook as
+ * ProductGallery, and benefits from AnimatedImage's internal loading
+ * placeholder for free — no changes needed to this component's own
+ * transition or state logic for either.
  */
 export function GalleryLightbox({
   media,
@@ -84,6 +90,14 @@ export function GalleryLightbox({
   const videoRef = useRef<HTMLVideoElement>(null);
 
   const active = media[activeIndex];
+
+  // Phase 3D: same shared preload hook as ProductGallery. This runs
+  // regardless of whether the lightbox is actually open (the component
+  // is always mounted; Radix controls visibility) — redundant with
+  // ProductGallery's own preload of the same URLs, but harmless: the
+  // browser dedupes an in-flight or already-cached request rather than
+  // re-fetching, so this costs nothing extra in practice.
+  useAdjacentMediaPreload(media, activeIndex);
 
   function goTo(index: number) {
     setZoomed(false);
