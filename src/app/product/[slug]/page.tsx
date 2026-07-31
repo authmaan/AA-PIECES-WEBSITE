@@ -6,6 +6,7 @@ import { WhatsAppOrderButton } from "@/components/common/WhatsAppOrderButton";
 import { RevealOnScroll } from "@/components/common/RevealOnScroll";
 import { Divider } from "@/components/common/Divider";
 import { ProductColorSelector } from "@/components/common/ProductColorSelector";
+import { StickyPurchasePanel } from "@/components/common/StickyPurchasePanel";
 import { ProductVariantProvider } from "@/components/common/ProductVariantContext";
 import { ProductVariantGallery } from "@/components/sections/product-gallery/ProductVariantGallery";
 import { CollectionCard } from "@/components/sections/collection/CollectionCard";
@@ -65,7 +66,15 @@ export default async function ProductDetailPage({
     }));
 
   return (
-    <div className="pt-32 pb-24 md:pt-36 md:pb-32">
+    <div className="pt-32 pb-40 md:pt-36 lg:pb-32">
+      {/*
+        pb-40 (up from the original pb-24) reserves room for the mobile
+        sticky purchase panel (~72px + safe-area) so it never permanently
+        overlaps the related-products section or footer once showing.
+        Reverts to the original pb-32 at `lg`, matching the panel's own
+        `lg:hidden` — the same mobile/desktop boundary already used
+        site-wide (nav, etc.), not a new one introduced for this panel.
+      */}
       <div className="container-boutique">
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="mb-10">
@@ -90,55 +99,57 @@ export default async function ProductDetailPage({
 
           {/* Details */}
           <div>
-            <RevealOnScroll variant="fade-up">
-              {/* 1. Product Name */}
-              <h1 className="display-hero text-[var(--color-brown-dark)] text-4xl md:text-5xl leading-tight mb-4">
-                {product.name}
-              </h1>
+            <StickyPurchasePanel product={product}>
+              <RevealOnScroll variant="fade-up">
+                {/* 1. Product Name */}
+                <h1 className="display-hero text-[var(--color-brown-dark)] text-4xl md:text-5xl leading-tight mb-4">
+                  {product.name}
+                </h1>
 
-              {/* 2. Selling Price — bumped text-2xl -> text-3xl for prominence, still within the existing type scale */}
-              <p className="label-nav text-3xl text-[var(--color-brown-dark)] mb-4">
-                {formatPrice(product.price, product.currency)}
-              </p>
+                {/* 2. Selling Price — bumped text-2xl -> text-3xl for prominence, still within the existing type scale */}
+                <p className="label-nav text-3xl text-[var(--color-brown-dark)] mb-4">
+                  {formatPrice(product.price, product.currency)}
+                </p>
 
-              {/* 3. One-line Statement */}
-              <p className="editorial-quote text-xl text-[var(--color-brown)] mb-8">
-                {product.tagline}
-              </p>
+                {/* 3. One-line Statement */}
+                <p className="editorial-quote text-xl text-[var(--color-brown)] mb-8">
+                  {product.tagline}
+                </p>
 
-              {/* 4. Colour Selector — only rendered when the product actually
-                  has colour variants; UI-only placeholder colours with no
-                  real media behind them would be misleading now that
-                  selecting one actually does something */}
-              {product.variants && product.variants.length > 0 && (
-                <div className="mb-8">
-                  <ProductColorSelector colors={product.variants} />
-                </div>
-              )}
-
-              {/* 5. Primary CTA */}
-              <WhatsAppOrderButton product={product} fullWidth className="mb-2" />
-              <p className="editorial-body text-sm text-[var(--color-brown)]/70 text-center mt-3">
-                Ordering here starts a WhatsApp conversation with our team —
-                no cart, no checkout, just a direct line to us.
-              </p>
-
-              {/* 6. Trust Badges — reuses the existing Divider rather than a
-                  one-off border; gap tightens below `sm` so labels like
-                  "Nationwide Delivery" have room to wrap cleanly at
-                  320–375px instead of crowding a wide gap-4 */}
-              <Divider className="mt-10 mb-8" />
-              <div className="grid grid-cols-3 gap-2 sm:gap-4">
-                {TRUST_BADGES.map((badge) => (
-                  <div key={badge.label} className="flex flex-col items-center text-center gap-2">
-                    <badge.icon className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--color-gold)]" strokeWidth={1.5} />
-                    <p className="label-nav text-xs text-[var(--color-brown-dark)] leading-tight">
-                      {badge.label}
-                    </p>
+                {/* 4. Colour Selector — only rendered when the product actually
+                    has colour variants; UI-only placeholder colours with no
+                    real media behind them would be misleading now that
+                    selecting one actually does something */}
+                {product.variants && product.variants.length > 0 && (
+                  <div className="mb-8">
+                    <ProductColorSelector colors={product.variants} />
                   </div>
-                ))}
-              </div>
-            </RevealOnScroll>
+                )}
+
+                {/* 5. Primary CTA */}
+                <WhatsAppOrderButton product={product} fullWidth className="mb-2" />
+                <p className="editorial-body text-sm text-[var(--color-brown)]/70 text-center mt-3">
+                  Ordering here starts a WhatsApp conversation with our team —
+                  no cart, no checkout, just a direct line to us.
+                </p>
+
+                {/* 6. Trust Badges — reuses the existing Divider rather than a
+                    one-off border; gap tightens below `sm` so labels like
+                    "Nationwide Delivery" have room to wrap cleanly at
+                    320–375px instead of crowding a wide gap-4 */}
+                <Divider className="mt-10 mb-8" />
+                <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                  {TRUST_BADGES.map((badge) => (
+                    <div key={badge.label} className="flex flex-col items-center text-center gap-2">
+                      <badge.icon className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--color-gold)]" strokeWidth={1.5} />
+                      <p className="label-nav text-xs text-[var(--color-brown-dark)] leading-tight">
+                        {badge.label}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </RevealOnScroll>
+            </StickyPurchasePanel>
 
             <Divider className="my-10" />
 
