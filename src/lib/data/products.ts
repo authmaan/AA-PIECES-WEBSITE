@@ -242,4 +242,100 @@ export const PRODUCTS: Product[] = [
     isFeatured: false,
     isNewArrival: true,
   },
+  {
+    // First real product, sourced from public/products/jf1603/product.txt
+    // and the real photography/video committed alongside it — not
+    // fictional sample data like the six above. Fields below are split
+    // clearly into what came directly from product.txt vs. what had to
+    // be inferred, since those shouldn't be mistaken for verified facts.
+    _id: "prod-jf1603",
+    slug: "jf1603",
+    name: "Joefox JF1603",
+    // Not provided in product.txt — derived from the brand + model
+    // number as a placeholder reference code, not a verified internal SKU.
+    reference: "AAP-JF-1603",
+    // Not stated in product.txt (no gender indication in the copy) —
+    // defaulting to unisex rather than assuming.
+    category: "unisex",
+    // Not stated in product.txt — "modern" chosen based on the actual
+    // description ("bold hybrid... everyday performance"), not verified
+    // against any real collection taxonomy.
+    collection: "modern",
+    price: 25000,
+    currency: "NGN",
+    // Not stated in product.txt — defaulting to in-stock.
+    availability: "in-stock",
+    tagline: "Bold hybrid chronograph for everyday performance.",
+    description:
+      "Sport chronograph with dual digital displays, luminous hands, stainless steel case and genuine leather strap.",
+    movement: "quartz",
+    caseMaterial: "Stainless Steel",
+    strapMaterial: "Leather",
+    // Not provided in product.txt (no case size given) — 42mm is a
+    // placeholder typical of this watch style, not a real measurement.
+    // Needs confirming against the physical product before launch.
+    caseDiameterMm: 42,
+    // product.txt lists "Water Splash Resistance" as a function, not a
+    // specific ATM/meter rating — represented honestly as stated, rather
+    // than inventing a specific rating that wasn't given.
+    waterResistance: "Splash resistant",
+    specs: [
+      { label: "Movement", value: "Quartz" },
+      { label: "Case", value: "Stainless steel" },
+      { label: "Strap", value: "Genuine leather" },
+      { label: "Display", value: "Analog / Digital / Hybrid" },
+      { label: "Functions", value: "Time display, date display, chronograph, water splash resistance" },
+      { label: "What's included", value: "Watch, premium box / branded package" },
+    ],
+    // product.txt also lists "Extra Features" (Premium Quality, Secure
+    // Payments, Satisfaction Guarantee, Worldwide Shipping, Money Back
+    // Guarantee) — deliberately not folded into specs above. These read
+    // as generic trust messaging, not product specifications, and
+    // overlap with the site's existing sitewide Trust Badges / "Why Shop
+    // With AA Pieces" sections rather than being per-product facts the
+    // Product type has a field for.
+    images: [
+      { url: "/products/jf1603/images/01-hero.jpg", alt: "Joefox JF1603 chronograph watch, hero view" },
+    ],
+    // Three real variants, each with its own real photo + real demo
+    // video — image first, video second, since the photo is each
+    // variant's primary/hero view and the video is supplementary. The
+    // asset folders' own "01-" numbering doesn't establish an order
+    // between images/ and videos/ (they're separate folders, each
+    // independently numbered), so this ordering is a deliberate choice,
+    // not a literal reading of file numbers. No dedicated poster image
+    // was provided for the videos, so each variant's own photo doubles
+    // as its video's poster — a common, reasonable pairing, not a
+    // separate asset that needed to exist.
+    variants: [
+      {
+        name: "Black",
+        swatch: "#000000",
+        media: [
+          { type: "image", url: "/products/jf1603/variants/black/images/01-hand.jpg", alt: "Joefox JF1603, black variant, worn on wrist" },
+          { type: "video", url: "/products/jf1603/variants/black/videos/01-demo.mp4", poster: "/products/jf1603/variants/black/images/01-hand.jpg", alt: "Joefox JF1603, black variant, demo video" },
+        ],
+      },
+      {
+        name: "Brown",
+        swatch: "#826929",
+        media: [
+          { type: "image", url: "/products/jf1603/variants/brown/images/01-hand.jpg", alt: "Joefox JF1603, brown variant, worn on wrist" },
+          { type: "video", url: "/products/jf1603/variants/brown/videos/01-demo.mp4", poster: "/products/jf1603/variants/brown/images/01-hand.jpg", alt: "Joefox JF1603, brown variant, demo video" },
+        ],
+      },
+      {
+        name: "Gold",
+        swatch: "#D0AC3D",
+        media: [
+          { type: "image", url: "/products/jf1603/variants/gold/images/01-hand.jpg", alt: "Joefox JF1603, gold variant, worn on wrist" },
+          { type: "video", url: "/products/jf1603/variants/gold/videos/01-demo.mp4", poster: "/products/jf1603/variants/gold/images/01-hand.jpg", alt: "Joefox JF1603, gold variant, demo video" },
+        ],
+      },
+    ],
+    // Judgment calls, not stated in product.txt: featured since it's the
+    // first real product on the site, and genuinely new as of today.
+    isFeatured: true,
+    isNewArrival: true,
+  },
 ];
