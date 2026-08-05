@@ -60,8 +60,11 @@ interface ProductGalleryProps {
  *   calling the same setActiveIndex path as clicks/keyboard — so swipe is
  *   just a third input into the same state, not a parallel system.
  *   Disabled on desktop entirely (avoids any conflict with mouse
- *   interaction) and disabled when the active item is a video (avoids
- *   competing with the video's own touch scrubbing controls).
+ *   interaction) and disabled only while the active video is actually
+ *   *playing* (bug fix — previously suppressed for any video regardless
+ *   of playback state, which silently broke swiping back off a video
+ *   that hadn't been played yet; a paused video is as swipeable as an
+ *   image, only active playback risks fighting the scrub controls).
  * - Phase 3D: previous/next images are preloaded in the background
  *   (useAdjacentMediaPreload) whenever activeIndex changes, and
  *   AnimatedImage itself now handles loading state internally (a neutral
@@ -73,6 +76,7 @@ interface ProductGalleryProps {
 export function ProductGallery({ media, ariaLabel, priority = false }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const heroId = useId();
   const active = media[activeIndex];
@@ -85,12 +89,33 @@ export function ProductGallery({ media, ariaLabel, priority = false }: ProductGa
   // the lightbox's click-to-zoom) is left completely alone.
   const isTouchDevice = useMediaQuery("(pointer: coarse)");
 
+  // videoPlaying lives on this parent component, so it isn't reset just
+  // because the child holding the actual <video> element remounts on
+  // navigation (key={activeIndex}) — reset it explicitly so swiping onto
+  // a *different* video doesn't inherit a stale "was playing" flag from
+  // whatever was previously active. Adjusting state during render
+  // (rather than in a useEffect) is React's recommended pattern for
+  // "reset state when a value changes" — it avoids the extra
+  // commit-then-effect-then-recommit cycle a useEffect version would
+  // cause here.
+  const [prevActiveIndex, setPrevActiveIndex] = useState(activeIndex);
+  if (activeIndex !== prevActiveIndex) {
+    setPrevActiveIndex(activeIndex);
+    setVideoPlaying(false);
+  }
+
   function goToIndex(index: number) {
     setActiveIndex((index + media.length) % media.length);
   }
 
   const swipeProps = useSwipeNavigation({
-    enabled: isTouchDevice && media.length > 1 && active?.type !== "video",
+    // Bug fix: previously suppressed swipe for any video regardless of
+    // playback state, which meant swiping *forward* onto a video worked
+    // but swiping *back off* it never did — the video was never playing
+    // yet, so there was nothing to protect against. Only actual playback
+    // risks fighting the video's own scrub controls; a paused video is
+    // just as swipeable as an image.
+    enabled: isTouchDevice && media.length > 1 && !(active?.type === "video" && videoPlaying),
     onPrevious: () => goToIndex(activeIndex - 1),
     onNext: () => goToIndex(activeIndex + 1),
   });
@@ -151,6 +176,8 @@ export function ProductGallery({ media, ariaLabel, priority = false }: ProductGa
                 playsInline
                 className="h-full w-full object-cover"
                 aria-label={active.alt}
+                onPlay={() => setVideoPlaying(true)}
+                onPause={() => setVideoPlaying(false)}
               />
             ) : (
               <AnimatedImage

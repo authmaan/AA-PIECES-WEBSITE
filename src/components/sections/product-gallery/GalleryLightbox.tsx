@@ -67,8 +67,9 @@ interface GalleryLightboxProps {
  * calling this component's existing `goTo` — so swipe, arrow buttons,
  * and keyboard all drive the same navigation path. Disabled on desktop,
  * disabled while zoomed (panning a zoomed image is a separate feature,
- * intentionally out of scope), and disabled for video (avoids competing
- * with the video's own touch scrubbing controls).
+ * intentionally out of scope), and disabled only while the active video
+ * is actually playing — not simply because it's a video (bug fix; see
+ * the swipeProps computation below).
  *
  * Phase 3D: shares the same useAdjacentMediaPreload hook as
  * ProductGallery, and benefits from AnimatedImage's internal loading
@@ -112,7 +113,13 @@ export function GalleryLightbox({
   // (avoids competing with the video's own touch scrubbing controls).
   const isTouchDevice = useMediaQuery("(pointer: coarse)");
   const swipeProps = useSwipeNavigation({
-    enabled: isTouchDevice && media.length > 1 && !zoomed && active?.type !== "video",
+    // Bug fix: previously suppressed swipe for any video regardless of
+    // playback state — videoPlaying was already tracked here (via
+    // onPlay/onPause below) but never actually used in this condition.
+    // Swiping onto a video worked, but swiping back off one that hadn't
+    // even been played yet silently didn't. Only actual playback risks
+    // fighting the video's own scrub controls.
+    enabled: isTouchDevice && media.length > 1 && !zoomed && !(active?.type === "video" && videoPlaying),
     onPrevious: () => goTo(activeIndex - 1),
     onNext: () => goTo(activeIndex + 1),
   });
