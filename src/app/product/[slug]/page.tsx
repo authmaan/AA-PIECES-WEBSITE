@@ -6,6 +6,7 @@ import { WhatsAppOrderButton } from "@/components/common/WhatsAppOrderButton";
 import { RevealOnScroll } from "@/components/common/RevealOnScroll";
 import { Divider } from "@/components/common/Divider";
 import { ProductColorSelector } from "@/components/common/ProductColorSelector";
+import { MobileProductSummary } from "@/components/common/MobileProductSummary";
 import { StickyPurchasePanel } from "@/components/common/StickyPurchasePanel";
 import { ProductVariantProvider } from "@/components/common/ProductVariantContext";
 import { ProductVariantGallery } from "@/components/sections/product-gallery/ProductVariantGallery";
@@ -97,10 +98,12 @@ export default async function ProductDetailPage({
               </div>
             </RevealOnScroll>
 
+            <MobileProductSummary product={product} />
+
           {/* Details */}
           <div>
             <StickyPurchasePanel product={product}>
-              <RevealOnScroll variant="fade-up">
+              <RevealOnScroll variant="fade-up" id="product-info">
                 {/* 1. Product Name */}
                 <h1 className="display-hero text-[var(--color-brown-dark)] text-4xl md:text-5xl leading-tight mb-4">
                   {product.name}
