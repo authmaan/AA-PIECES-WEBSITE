@@ -338,4 +338,137 @@ export const PRODUCTS: Product[] = [
     isFeatured: true,
     isNewArrival: true,
   },
+  {
+    // Second real product, sourced from public/products/af6208/product.txt
+    // and the real photography/video committed alongside it.
+    //
+    // IMPORTANT DISCREPANCY: the asset folder is named "af6208", but
+    // product.txt itself declares "Slug: alfaji-6208". Per the instruction
+    // to treat product.txt as the single source of truth for product
+    // information, `slug` below is "alfaji-6208" as stated — but every
+    // media URL still correctly points at the real, physical
+    // "/products/af6208/..." path, since that's where the files actually
+    // live and isn't something this change can rename. This means slug
+    // and asset-folder-name intentionally don't match; not an error.
+    _id: "prod-alfaji-6208",
+    slug: "alfaji-6208",
+    name: "AL-FAJI Original 6208",
+    // Not provided in product.txt — derived from the model number, not a
+    // verified internal SKU.
+    reference: "AAP-AF-6208",
+    // Not stated in product.txt — defaulting to unisex, same as JF1603.
+    category: "unisex",
+    // Not stated in product.txt — "modern" chosen on the same basis as
+    // JF1603 (a tech-forward hybrid piece: LED backlight, dual time,
+    // language selection), not a verified taxonomy.
+    collection: "modern",
+    price: 118000,
+    currency: "NGN",
+    // Not stated in product.txt — defaulting to in-stock.
+    availability: "in-stock",
+    tagline: "Faith-inspired dual time watch with smart Islamic features.",
+    description:
+      "Designed for everyday wear while supporting your daily routines, the AL-FAJI 6208 combines classic analog styling with practical digital functionality. Featuring Islamic timekeeping tools, dual-time capability and a comfortable rubber strap, it offers reliability, convenience and distinctive style for work, travel and worship.",
+    // product.txt says "Analog Quartz" — "Analog" describes the display,
+    // not the movement type, so this maps directly to "quartz" (not a
+    // guess, just normalized to the existing enum).
+    movement: "quartz",
+    caseMaterial: "Zinc Alloy",
+    strapMaterial: "Rubber",
+    // Not provided in product.txt (no case size given) — 40mm is a
+    // placeholder, not a real measurement. Needs confirming against the
+    // physical product before launch, same caveat as JF1603.
+    caseDiameterMm: 40,
+    // Not mentioned anywhere in product.txt — unlike JF1603, there's no
+    // water-resistance-related function listed at all here. Rather than
+    // invent a rating or reuse JF1603's, this states plainly that no
+    // information was provided.
+    waterResistance: "Not specified",
+    specs: [
+      { label: "Movement", value: "Analog quartz" },
+      { label: "Case", value: "Zinc alloy" },
+      { label: "Strap", value: "Rubber" },
+      { label: "Display", value: "Analog / Digital hybrid" },
+      // product.txt lists 19 individual functions — far more than
+      // JF1603's 4. Cramming all 19 into a single right-aligned spec row
+      // (the only formatting the existing UI supports, unchanged here)
+      // would render as one very long wrapped line. Splitting them into
+      // two thematically grouped rows is my own organizational choice
+      // for readability, not a grouping product.txt itself specified —
+      // still just the existing ProductSpec[] shape, no type or UI
+      // change involved.
+      {
+        label: "Islamic Features",
+        value: "Pilgrimage time reminder, Qibla name display, Qibla direction, Hijri calendar, religious month, religious day",
+      },
+      {
+        label: "Functions",
+        value: "Dual time display, Gregorian calendar, city time, alarm, LED backlight, date display, day display, 12/24 hour format, language selection, volume adjustment, battery indicator, summer time, bookmark function",
+      },
+      { label: "What's included", value: "Watch, premium box / branded package" },
+    ],
+    // product.txt also lists "Extra Features" (Premium Quality, Secure
+    // Payments, Satisfaction Guarantee, Worldwide Shipping, Money Back
+    // Guarantee) — deliberately not folded into specs, same reasoning as
+    // JF1603: generic trust messaging, not product specifications,
+    // already covered by the site's sitewide Trust Badges section.
+    images: [
+      { url: "/products/af6208/images/hero.jpg", alt: "AL-FAJI Original 6208 watch, hero view" },
+    ],
+    // gallery takes priority over images in the fallback chain
+    // (product.gallery ?? product.images...), so it needs to be a
+    // complete default view on its own, not just "extra" media: hero
+    // first, then the group photo, then the group video — image before
+    // video, matching the same ordering convention JF1603 established.
+    // No dedicated poster exists for the group video, so the group photo
+    // doubles as its poster, same pairing convention as JF1603.
+    gallery: [
+      { type: "image", url: "/products/af6208/images/hero.jpg", alt: "AL-FAJI Original 6208 watch, hero view" },
+      { type: "image", url: "/products/af6208/gallery/group-image.jpg", alt: "AL-FAJI Original 6208, group view" },
+      { type: "video", url: "/products/af6208/gallery/group-video.mp4", poster: "/products/af6208/gallery/group-image.jpg", alt: "AL-FAJI Original 6208, group video" },
+    ],
+    // Three real variants, in the order product.txt lists them (Silver,
+    // Gold, Rose Gold) — not folder alphabetical order. Each variant's
+    // own photo doubles as its video's poster, same as JF1603. Note:
+    // the Silver variant's real filename on disk is "hand-sliver.jpg"
+    // (typo for "silver") — referenced exactly as it exists, not
+    // corrected, since renaming the actual asset file is outside this
+    // change's scope.
+    variants: [
+      {
+        name: "Silver",
+        swatch: "#C7C7C7",
+        media: [
+          { type: "image", url: "/products/af6208/variants/silver/images/hand-sliver.jpg", alt: "AL-FAJI Original 6208, silver variant, worn on wrist" },
+          { type: "video", url: "/products/af6208/variants/silver/videos/silver-video.mp4", poster: "/products/af6208/variants/silver/images/hand-sliver.jpg", alt: "AL-FAJI Original 6208, silver variant, demo video" },
+        ],
+      },
+      {
+        name: "Gold",
+        swatch: "#D0AC3D",
+        media: [
+          { type: "image", url: "/products/af6208/variants/gold/images/hand-gold.jpg", alt: "AL-FAJI Original 6208, gold variant, worn on wrist" },
+          { type: "video", url: "/products/af6208/variants/gold/videos/gold-video.mp4", poster: "/products/af6208/variants/gold/images/hand-gold.jpg", alt: "AL-FAJI Original 6208, gold variant, demo video" },
+        ],
+      },
+      {
+        name: "Rose Gold",
+        // Not extracted from the actual photo — a standard, widely
+        // recognized "rose gold" reference hue, representative rather
+        // than verified against the physical product.
+        swatch: "#B76E79",
+        media: [
+          { type: "image", url: "/products/af6208/variants/rosegold/images/hand-rosegold.jpg", alt: "AL-FAJI Original 6208, rose gold variant, worn on wrist" },
+          { type: "video", url: "/products/af6208/variants/rosegold/videos/video-rosegold.mp4", poster: "/products/af6208/variants/rosegold/images/hand-rosegold.jpg", alt: "AL-FAJI Original 6208, rose gold variant, demo video" },
+        ],
+      },
+    ],
+    // Judgment calls, not stated in product.txt: genuinely new as of
+    // today, but not marked featured this time — unlike JF1603 (the
+    // site's first real product, a deliberate one-off milestone), every
+    // new product being auto-featured would eventually crowd the
+    // homepage's Featured Collection indefinitely.
+    isFeatured: false,
+    isNewArrival: true,
+  },
 ];
